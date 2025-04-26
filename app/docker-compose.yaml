@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  app:
+    container_name: act-3-devops
+    build: .
+    restart: always
+
+
+
+
+    volumes:
+      - .:/app
+      - /app/node-modules
+
+    ports:
+      - 3000:3000
