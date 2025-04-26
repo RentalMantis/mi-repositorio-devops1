@@ -1,0 +1,12 @@
+services:
+  - name: mi-app
+    type: web
+    env: docker
+    plan: starter
+    autoDeploy: true
+    region: oregon
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://usuario:password@host:puerto/db
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
