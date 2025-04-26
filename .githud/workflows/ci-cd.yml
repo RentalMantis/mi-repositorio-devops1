@@ -1,0 +1,52 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        echo "Instalando dependencias..."
+        cd app
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        echo "Dependencias instaladas correctamente."
+
+    - name: Run basic Flask test
+      run: |
+        echo "Iniciando servidor Flask para pruebas..."
+        cd app
+        python -m flask --app app.py run &
+        sleep 5
+        curl -f http://127.0.0.1:5000/
+        echo "Servidor Fñask respondio correctamente."
+        
+    - name: Build Docker image
+  run: |
+    echo "Construyendo imagen Docker..."
+    docker build -t test-image ./app
+    echo "Imagen Docker construida correctamente."
+
+deploy:
+  needs: build-and-test
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Trigger Render Deploy Hook
+      run: |
+        echo "Enviando solicitud de despliegue a Render..."
+        curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+        echo "Despliegue en Render solicitado exitosamente."
