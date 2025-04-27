@@ -6,16 +6,25 @@ phases:
       - echo "Instalando dependencias necesarias"
       - apt-get update
       - apt-get install -y docker.io
+
   pre_build:
     commands:
-      - echo "Logueando en ECR (si usas ECR, si no, omite)"
+      - echo "Logueando en ECR"
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 232789951164.dkr.ecr.us-east-2.amazonaws.com
+
   build:
     commands:
       - echo "Construyendo imagen docker"
       - docker build -t flask-app ./app
+      - echo "Etiquetando imagen"
+      - docker tag flask-app:latest 232789951164.dkr.ecr.us-east-2.amazonaws.com/flask-app:latest
+
   post_build:
     commands:
       - echo "Construcción terminada"
+      - echo "Subiendo imagen a ECR"
+      - docker push 232789951164.dkr.ecr.us-east-2.amazonaws.com/flask-app:latest
+
 artifacts:
   files:
     - appspec.yml
