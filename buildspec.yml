@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Instalando dependencias necesarias"
+      - apt-get update
+      - apt-get install -y docker.io
+  pre_build:
+    commands:
+      - echo "Logueando en ECR (si usas ECR, si no, omite)"
+  build:
+    commands:
+      - echo "Construyendo imagen docker"
+      - docker build -t flask-app ./app
+  post_build:
+    commands:
+      - echo "Construcción terminada"
+artifacts:
+  files:
+    - appspec.yml
+    - scripts/**/*
